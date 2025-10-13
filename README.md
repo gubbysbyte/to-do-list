@@ -3,13 +3,9 @@
 1.  **Clone the repository:**
 
    ```bash
-   git clone <your-repository-url>
+   git clone https://github.com/gubbysbyte/to-do-list
    cd simple-todo-api
 ```
-    ```bash
-    git clone https://github.com/your-username/your-repository-name.git
-    cd to-do-list
-    ```
 
 2.  **Install dependencies:**
 
