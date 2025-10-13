@@ -1,0 +1,83 @@
+const express = require('express');
+
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
+let todos = [
+    {id: 1, task: 'Learn Node.js', completed: false},
+    {id: 2, task: 'Build a Simple API', completed: true},
+    {id: 3, task: 'Push to Github', completed: false}
+];
+let nextId = 4;
+
+app.get('/todos', (req, res) => {
+    res.json(todos);
+})
+
+app.get("/todos/:id", (req, res) => {
+    const todoId = parseInt(req.params.id, 10);
+    const todo = todos.find(t => t.id == todoId);
+
+    if(todo){
+        res.json(todo);
+    }
+    else{
+        res.status(404).json({message: 'To-do not found'});
+    }
+})
+
+app.post("/todos", (req, res) => {
+    const { task } = req.body;
+    if(task){
+        const newTodo = {
+            id: nextId++,
+            task: task,
+            completed: false
+        };
+        todos.push(newTodo);
+        res.status(201).json(newTodo);
+    }
+    else{
+        res.status(400).json({message: 'Task is required'});
+    }
+})
+
+app.put("/todos/:id", (req, res) => {
+    const todoId = parseInt(req.params.id, 10);
+    const {task, completed} = req.body;
+    const todoIndex = todos.findIndex(t => t.id == todoId);
+
+    if(todoIndex !== -1){
+        const originalTodo = todos[todoIndex];
+
+        const updatedTodo = {
+            ...originalTodo,
+            task: task !== undefined ? task : originalTodo.task,
+            completed: completed !== undefined ? completed : originalTodo.completed, 
+        };
+
+        todos[todoIndex] = updatedTodo;
+        res.json(updatedTodo);
+    }
+    else{
+        res.status(404).json({message: 'To-do not found'});
+    }
+})
+
+app.delete("/todos/:id", (req, res) => {
+    const todoId = parseInt(req.params.id, 10);
+    const todoIndex = todos.findIndex(t => t.id === todoId);
+
+    if(todoIndex){
+        todos.splice(todoIndex, 1);
+        res.status(204).send();
+    }
+    else{
+        res.status(404).json({message: 'To-do not found'});
+    }
+})
+
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
